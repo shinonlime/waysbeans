@@ -11,8 +11,8 @@ type Transaction struct {
 	Attachment string              `json:"attachment" gorm:"type: varchar(255)"`
 	Status     string              `json:"status" gorm:"type: varchar(255)"`
 	UserID     int                 `json:"user_id"`
-	User       UserProfileResponse `json:"user"`
-	Product    []ProductTransaction
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	User       UserProfileResponse `json:"-"`
+	Cart       []Cart              `json:"cart"`
+	CreatedAt  time.Time           `json:"created_at"`
+	UpdatedAt  time.Time           `json:"updated_at"`
 }

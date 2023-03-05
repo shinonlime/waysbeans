@@ -6,4 +6,6 @@ type TransactionRequest struct {
 	Phone      int    `json:"phone" form:"phone"`
 	Address    string `json:"address" form:"address"`
 	Attachment string `json:"attachment" form:"image"`
+	Status     string `json:"status"`
+	UserID     int    `json:"user_id"`
 }

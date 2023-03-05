@@ -53,7 +53,14 @@ func (h *handlerAuth) Register(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: data})
+	registerResponse := authdto.RegisterResponse{
+		Name:     data.Name,
+		IsAdmin:  data.IsAdmin,
+		Email:    data.Email,
+		Password: data.Password,
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: registerResponse})
 }
 
 func (h *handlerAuth) Login(c echo.Context) error {
