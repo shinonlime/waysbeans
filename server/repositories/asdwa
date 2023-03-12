@@ -1,0 +1,100 @@
+type Cart struct {
+	ID            int         `json:"-"`
+	ProductID     int         `json:"product_id"`
+	Product       Product     `json:"product"`
+	TransactionID int         `json:"-"`
+	Transaction   Transaction `json:"-"`
+	Quantity      int         `json:"quantity"`
+}
+
+type Product struct {
+	ID          int       `json:"id"`
+	Name        string    `json:"name" grom:"type: varchar(255)"`
+	Price       int       `json:"price" grom:"type: int(11)"`
+	Description string    `json:"description" grom:"type: longtext"`
+	Stock       int       `json:"stock" grom:"type: int(11)"`
+	Image       string    `json:"image" grom:"type: varchar(255)"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type Transaction struct {
+	ID        int                 `json:"id"`
+	Name      string              `json:"name" gorm:"type: varchar(255)"`
+	Email     string              `json:"email" gorm:"type: varchar(255)"`
+	Phone     string              `json:"phone" gorm:"type: varchar(255)"`
+	Address   string              `json:"address"`
+	Status    string              `json:"status" gorm:"type: varchar(255)"`
+	UserID    int                 `json:"user_id"`
+	User      UserProfileResponse `json:"-"`
+	Cart      []Cart              `json:"cart" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Total     int                 `json:"total"`
+	CreatedAt time.Time           `json:"created_at"`
+	UpdatedAt time.Time           `json:"updated_at"`
+}
+
+func (h *handlerTransaction) UpdateTransaction(c echo.Context) error {
+	var notificationPayload map[string]interface{}
+
+	if err := c.Bind(&notificationPayload); err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	transactionStatus := notificationPayload["transaction_status"].(string)
+	fraudStatus := notificationPayload["fraud_status"].(string)
+	orderId := notificationPayload["order_id"].(string)
+
+	order_id, _ := strconv.Atoi(orderId)
+
+	fmt.Print("ini payloadnya", notificationPayload)
+
+	if transactionStatus == "capture" {
+		if fraudStatus == "challenge" {
+			// TODO set transaction status on your database to 'challenge'
+			// e.g: 'Payment status challenged. Please take action on your Merchant Administration Portal
+			h.TransactionRepository.UpdateTransaction("pending", order_id)
+		} else if fraudStatus == "accept" {
+			// TODO set transaction status on your database to 'success'
+			h.TransactionRepository.UpdateTransaction("success", order_id)
+		}
+	} else if transactionStatus == "settlement" {
+		// TODO set transaction status on your databaase to 'success'
+		h.TransactionRepository.UpdateTransaction("success", order_id)
+	} else if transactionStatus == "deny" {
+		// TODO you can ignore 'deny', because most of the time it allows payment retries
+		// and later can become success
+		h.TransactionRepository.UpdateTransaction("failed", order_id)
+	} else if transactionStatus == "cancel" || transactionStatus == "expire" {
+		// TODO set transaction status on your databaase to 'failure'
+		h.TransactionRepository.UpdateTransaction("failed", order_id)
+	} else if transactionStatus == "pending" {
+		// TODO set transaction status on your databaase to 'pending' / waiting payment
+		h.TransactionRepository.UpdateTransaction("pending", order_id)
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: notificationPayload})
+}
+
+func (r *repository) UpdateTransaction(status string, orderId int) (models.Transaction, error) {
+	var transaction models.Transaction
+	r.db.Preload("Cart.Product").First(&transaction, orderId)
+
+	if status != transaction.Status && status == "success" {
+		for _, cart := range transaction.Cart {
+			var product models.Product
+			r.db.First(&product, cart.ProductID)
+			product.Stock = product.Stock - cart.Quantity
+			r.db.Save(&product)
+		}
+	} else if status == "success" && transaction.Status == "success" {
+		for _, cart := range transaction.Cart {
+			var product models.Product
+			r.db.First(&product, cart.ProductID)
+			product.Stock = product.Stock - cart.Quantity
+			r.db.Save(&product)
+		}
+	}
+	transaction.Status = status
+	err := r.db.Save(&transaction).Error
+	return transaction, err
+}
