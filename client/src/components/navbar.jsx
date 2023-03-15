@@ -82,7 +82,7 @@ export default function NaviBar() {
                                         className="rounded-circle dropdown-center"
                                     />
                                 ) : (
-                                    <img src="/waysbeans/profile.png" alt="" width="50px" height="50px" style={{objectFit: "cover"}} className="rounded-circle dropdown-center" />
+                                    <img src={`http://localhost:5000/uploads/profile.png`} alt="" width="50px" height="50px" style={{objectFit: "cover"}} className="rounded-circle dropdown-center" />
                                 )
                             }>
                             <NavDropdown.Item className="fw-semibold">

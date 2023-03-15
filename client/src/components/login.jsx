@@ -67,6 +67,7 @@ export default function Login(props) {
                 </Alert>
             );
             setMessage(alert);
+            props.onHide();
         } catch (error) {
             const alert = (
                 <Alert variant="danger" className="py-1">

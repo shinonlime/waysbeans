@@ -10,11 +10,13 @@ export default function ListProduct() {
         return response.data.data;
     });
 
-    const handleDeleteItem = (id) => {
-        const productsData = JSON.parse(localStorage.getItem("products"));
-        productsData.splice(id, 1);
-        localStorage.setItem("products", JSON.stringify(productsData));
-    };
+    const handleDelete = useMutation(async (id) => {
+        try {
+            await API.delete(`/product/${id}`);
+        } catch (error) {
+            console.log(error);
+        }
+    });
 
     const rupiah = (number) => {
         return new Intl.NumberFormat("id-ID", {
@@ -53,12 +55,7 @@ export default function ListProduct() {
                                 <td>{item.description}</td>
                                 <td className="text-warning">
                                     <div className="d-flex gap-2 justify-content-center">
-                                        <Button
-                                            variant="link"
-                                            onClick={() => {
-                                                handleDeleteItem(index);
-                                            }}
-                                            className="text-decoration-none badge w-100 bg-danger">
+                                        <Button variant="link" onClick={() => handleDelete.mutate(item.id)} className="text-decoration-none badge w-100 bg-danger">
                                             Delete
                                         </Button>
                                         <Button href={`/edit-product/${item.id}`} variant="link" className="text-decoration-none badge w-100 bg-success">

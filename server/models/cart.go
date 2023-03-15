@@ -3,9 +3,9 @@ package models
 type Cart struct {
 	ID            int         `json:"-"`
 	ProductID     int         `json:"-"`
-	Product       Product     `json:"product" gorm:"foreignKey:ProductID;references:ID"`
+	Product       Product     `json:"product" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	TransactionID int         `json:"-"`
-	Transaction   Transaction `json:"-" gorm:"foreignKey:TransactionID;references:ID"`
+	Transaction   Transaction `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Quantity      int         `json:"quantity"`
 }
 

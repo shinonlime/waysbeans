@@ -62,6 +62,7 @@ export default function UpdateProfile(props) {
             const response = await API.patch("/profile", formData, config);
             console.log("update profile success : ", response);
 
+            props.onHide();
             navigate("/profile");
         } catch (error) {
             console.log("update profile failed : ", error);
@@ -72,7 +73,7 @@ export default function UpdateProfile(props) {
         <>
             <Modal {...props} centered>
                 <Modal.Body>
-                    <Modal.Title className="mb-3 text-primary">Checkout</Modal.Title>
+                    <Modal.Title className="mb-3 text-primary">Update Profile</Modal.Title>
                     <Form className="mt-3 d-flex flex-column gap-3" onSubmit={(e) => handleSubmit.mutate(e)}>
                         <Form.Control name="name" value={form.name} onChange={handleChange} type="text" className="bg-accent" placeholder="Name" />
                         <Form.Control name="email" value={form.email} onChange={handleChange} type="text" className="bg-accent" placeholder="Email" />

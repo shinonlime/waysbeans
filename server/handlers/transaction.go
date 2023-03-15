@@ -101,7 +101,7 @@ func (h *handlerTransaction) CreateTransaction(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: snapResp})
 
-	// return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponseTransaction(dataTransactions)})
+	// return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: dataTransactions})
 }
 
 func (h *handlerTransaction) GetTransaction(c echo.Context) error {
@@ -204,7 +204,7 @@ func SendMail(status string, transaction models.Transaction) {
 		<body>
 		<h2>Product payment :</h2>
 		<ul style="list-style-type:none;">
-		  <li>Name : %s</li>
+		  <li>ID Transaction : %s</li>
 		  <li>Total payment: Rp. %s</li>
 		  <li>Status : <b>%s</b></li>
 		</ul>

@@ -40,6 +40,7 @@ export default function Register(props) {
                 password: "",
             });
             setRegisterShow(false);
+            props.handleLogin();
         } catch (error) {
             const alert = (
                 <Alert variant="danger" className="py-1">

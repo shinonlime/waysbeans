@@ -48,11 +48,7 @@ export default function DetailProduct() {
         setShow(true);
     };
 
-    const user = () => {
-        dispatch({
-            type: "LOGIN_SUCCESS",
-        });
-    };
+    const user = localStorage.getItem("token");
 
     const rupiah = (number) => {
         return new Intl.NumberFormat("id-ID", {
@@ -83,12 +79,8 @@ export default function DetailProduct() {
                         <div className="d-flex justify-content-end my-3">
                             <p className="fw-bold fs-4 text-secondary">{rupiah(product?.price)}</p>
                         </div>
-                        {user ? (
+                        {user && (
                             <Button onClick={handleSubmit} variant="primary" type="submit" className="w-100 mx-auto">
-                                Add Cart
-                            </Button>
-                        ) : (
-                            <Button onClick={handleSubmit} variant="primary" type="submit" className="w-100 mx-auto" disabled>
                                 Add Cart
                             </Button>
                         )}
