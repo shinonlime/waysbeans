@@ -220,7 +220,7 @@ func (h *handlerProduct) DeleteProduct(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 
-	data, err := h.ProductRepository.DeleteProduct(product, id)
+	data, err := h.ProductRepository.DeleteProduct(product)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
