@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -197,6 +198,26 @@ func (h *handlerProduct) DeleteProduct(c echo.Context) error {
 	product, err := h.ProductRepository.FindProduct(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
+
+	// Add your Cloudinary credentials ...
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	urlParts := strings.Split(product.Image, "/")
+	publicID := urlParts[len(urlParts)-1]
+	publicID = publicID[:strings.Index(publicID, ".")]
+
+	// Delete file from Cloudinary ...
+	resp, err := cld.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: publicID})
+
+	fmt.Println(resp)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 
 	data, err := h.ProductRepository.DeleteProduct(product, id)
