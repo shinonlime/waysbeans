@@ -210,7 +210,7 @@ func (h *handlerProduct) DeleteProduct(c echo.Context) error {
 
 	urlParts := strings.Split(product.Image, "/")
 	publicID := urlParts[len(urlParts)-1]
-	publicID = publicID[:strings.Index(publicID, ".")]
+	// publicID = publicID[:strings.Index(publicID, ".")]
 
 	// Delete file from Cloudinary ...
 	resp, err := cld.Upload.Destroy(ctx, uploader.DestroyParams{PublicID: publicID})
