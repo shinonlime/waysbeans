@@ -32,10 +32,10 @@ export default function Register(props) {
 
             setLoading(true);
 
-            const responseUser = await API.get(`/user/${input.email}`);
+            const responseUser = await API.get("/user/" + input.email);
             setEmailUser(responseUser.data.data.email);
 
-            if (email !== emailUser) {
+            if (input.email !== emailUser) {
                 const response = await API.post("/register", input);
 
                 console.log("register success : ", response);
@@ -45,7 +45,7 @@ export default function Register(props) {
                     email: "",
                     password: "",
                 });
-            } else if (email === emailUser) {
+            } else if (input.email === emailUser) {
                 const alert = (
                     <Alert variant="danger" className="py-1">
                         Email address already exists
